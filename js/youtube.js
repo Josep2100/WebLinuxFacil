@@ -1,30 +1,35 @@
-
 const API_KEY = "AIzaSyCTqXue0jpubIfHlRMkryJLgYDJx_KD8GI";
-const CHANNEL_ID = "UC9tZ0VTMQoNqT1L-ADss1YQ";
+const CHANNEL_USERNAME = "josepcalvoasix";
 
-const URL =
-`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=50`;
-
-fetch(URL)
+fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${CHANNEL_USERNAME}&key=${API_KEY}`)
   .then(res => res.json())
   .then(data => {
 
-    let container = document.getElementById("video-container");
+    const uploadsPlaylistId = data.items[0].contentDetails.relatedPlaylists.uploads;
 
-    data.items.forEach(video => {
+    return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${uploadsPlaylistId}&key=${API_KEY}`);
+  })
+  .then(res => res.json())
+  .then(data => {
 
-      if (video.id.videoId) {
+    const container = document.getElementById("video-container");
 
-        container.innerHTML += `
-          <div class="video-card">
-            <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank">
-              <img src="${video.snippet.thumbnails.high.url}">
-              <div class="title">${video.snippet.title}</div>
-            </a>
-          </div>
-        `;
-      }
+    data.items.forEach(item => {
 
+      const videoId = item.snippet.resourceId.videoId;
+
+      container.innerHTML += `
+        <div class="video-card">
+          <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">
+            <img src="${item.snippet.thumbnails.high.url}">
+            <div class="title">${item.snippet.title}</div>
+          </a>
+        </div>
+      `;
     });
 
+  })
+  .catch(error => {
+    document.getElementById("video-container").innerHTML =
+    "<p style='text-align:center;'>No se pudieron cargar los videos.</p>";
   });
