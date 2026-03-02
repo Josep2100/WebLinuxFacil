@@ -9,13 +9,12 @@ fetch(URL)
 
     const container = document.getElementById("video-container");
 
-    if (!data.items || data.items.length === 0) {
-        container.innerHTML = "<p style='text-align:center;'>No se encontraron videos.</p>";
+    if (!data.items) {
+        container.innerHTML = "<p style='text-align:center;'>Error al conectar con la API.</p>";
         return;
     }
 
     data.items.forEach(video => {
-
         container.innerHTML += `
             <div class="video-card">
                 <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank">
@@ -29,5 +28,5 @@ fetch(URL)
   })
   .catch(error => {
       document.getElementById("video-container").innerHTML =
-      "<p style='text-align:center;'>Error al conectar con la API.</p>";
+      "<p style='text-align:center;'>No se pudieron cargar los videos.</p>";
   });
